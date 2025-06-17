@@ -74,42 +74,88 @@ const PerfectNumber = () => {
   };
 
   return (
-    <div className="bg-gray-100 p-8 w-[780px] overflow-auto">
-      <Card className="w-[748px] mx-auto shadow-md bg-white">
-        <div className="bg-sky-50 p-6 rounded-t-lg w-[748px]">
-          <h1 className="text-sky-900 text-2xl font-bold">Perfect Numbers</h1>
-          <p className="text-sky-800">Learn how to identify perfect numbers!</p>
-        </div>
+    <>
+      <style>{`
+        @property --r {
+          syntax: '<angle>';
+          inherits: false;
+          initial-value: 0deg;
+        }
 
-        <CardContent className="space-y-6 pt-6 w-[748px]">
-          <div className="bg-blue-50 p-4 rounded border border-blue-200">
-            <h2 className="text-blue-900 font-bold mb-2">What is a Perfect Number?</h2>
-            <p className="text-blue-600">
-              A perfect number is a positive integer that equals the sum of all its proper divisors (excluding the number itself).
-            </p>
+        .glow-button { 
+          min-width: auto; 
+          height: auto; 
+          position: relative; 
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1;
+          transition: all .3s ease;
+          padding: 7px;
+        }
+
+        .glow-button::before {
+          content: "";
+          display: block;
+          position: absolute;
+          background: rgb(250, 245, 255);
+          inset: 2px;
+          border-radius: 4px;
+          z-index: -2;
+        }
+
+        .simple-glow {
+          background: conic-gradient(
+            from var(--r),
+            transparent 0%,
+            rgb(0, 255, 132) 2%,
+            rgb(0, 214, 111) 8%,
+            rgb(0, 174, 90) 12%,
+            rgb(0, 133, 69) 14%,
+            transparent 15%
+          );
+          animation: rotating 3s linear infinite;
+          transition: animation 0.3s ease;
+        }
+
+        .simple-glow.stopped {
+          animation: none;
+          background: none;
+        }
+
+        @keyframes rotating {
+          0% {
+            --r: 0deg;
+          }
+          100% {
+            --r: 360deg;
+          }
+        }
+      `}</style>
+      <div className="w-[500px] h-auto mx-auto shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.05)] bg-white rounded-lg overflow-hidden">
+        <div className="p-4 w-[500px]">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[#5750E3] text-sm font-medium select-none">Perfect Numbers Practice</h2>
+            <button
+              onClick={resetPractice}
+              className="text-gray-500 hover:text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 hover:border-gray-400 transition-colors"
+            >
+              Reset
+            </button>
           </div>
 
-          <Card className="border border-gray-200">
-            <CardContent className="space-y-4 pt-4 p-6">
-              <h2 className="font-semibold mb-2">Example:</h2>
-              <div>
-                <p className="font-semibold">6 is a perfect number because:</p>
-                <p>Proper divisors of 6 are: 1, 2, 3</p>
-                <p>1 + 2 + 3 = 6</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 w-[468px]">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-purple-900 font-bold">Practice Time!</h2>
+              <h2 className="text-purple-900 font-bold">Number {currentIndex + 1}</h2>
               <div className="flex gap-2">
                 {numbers.map((_, idx) => (
                   <div
                     key={idx}
                     className={`rounded-full transition-all duration-300 ${
-                      idx < currentIndex ? 'w-3 h-3 bg-green-500' : 
-                      idx === currentIndex ? 'w-2 h-2 bg-purple-600 mt-0.5' : 
+                      idx < currentIndex ? 'w-3 h-3 bg-[#008545]' : 
+                      idx === currentIndex ? 'w-2 h-2 bg-[#5750E3] mt-0.5' : 
                       'w-3 h-3 bg-purple-200'
                     }`}
                   />
@@ -117,11 +163,12 @@ const PerfectNumber = () => {
               </div>
             </div>
 
-            <div className="text-center text-2xl mb-4">
-              <span className="font-bold">{numbers[currentIndex]}</span>
+            <div className="bg-white p-4 rounded-lg shadow-sm mb-4 w-[436px]">
+              <p className="font-medium text-sm">Analyze the following number:</p>
+              <p className="mt-2 font-semibold text-2xl text-center">{numbers[currentIndex]}</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 w-[436px]">
               <div>
                 <p className="text-purple-900 mb-2">1. What are the proper divisors?</p>
                 {!divisorsChecked ? (
@@ -133,33 +180,37 @@ const PerfectNumber = () => {
                         setDivisorsInput(e.target.value);
                         if (hasError.divisors) setHasError(prev => ({ ...prev, divisors: false }));
                       }}
-                      className={`w-48 text-center ${
-                        hasError.divisors ? 'border-red-500 focus:border-red-500' : 'border-blue-300'
+                      className={`w-[200px] text-center ${
+                        hasError.divisors ? 'border-red-500 focus:border-red-500' : 'border-[#5750E3]'
                       }`}
                       placeholder="e.g., 1, 2, 3"
                     />
-                    <div className="flex gap-4">
-                      <Button 
-                        onClick={checkDivisors}
-                        className="bg-blue-400 hover:bg-blue-500"
-                      >
-                        Check
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setDivisorsInput(findProperDivisors(numbers[currentIndex]).join(', '));
-                          setDivisorsChecked(true);
-                        }}
-                        className="bg-gray-400 hover:bg-gray-500"
-                      >
-                        Skip
-                      </Button>
+                    <div className="glow-button simple-glow">
+                      <div className="flex gap-4">
+                        <Button 
+                          onClick={checkDivisors}
+                          className="bg-[#00783E] hover:bg-[#006633] text-white text-sm px-4 py-2 rounded"
+                        >
+                          Check
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setDivisorsInput(findProperDivisors(numbers[currentIndex]).join(', '));
+                            setDivisorsChecked(true);
+                          }}
+                          className="bg-gray-400 hover:bg-gray-500 text-white text-sm px-4 py-2 rounded"
+                        >
+                          Skip
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-green-600 font-bold">
-                    {findProperDivisors(numbers[currentIndex]).join(', ')}
-                  </p>
+                  <div className="bg-[#008545]/10 border border-[#008545] p-4 rounded-lg w-[436px]">
+                    <p className="text-[#008545] font-bold">
+                      {findProperDivisors(numbers[currentIndex]).join(', ')}
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -172,68 +223,71 @@ const PerfectNumber = () => {
                         type="text"
                         value={isPerfectInput}
                         onChange={(e) => {
-                        setIsPerfectInput(e.target.value);
-                        if (hasError.perfect) setHasError(prev => ({ ...prev, perfect: false }));
-                      }}
-                        className={`w-32 text-center ${
-                          hasError.perfect ? 'border-red-500 focus:border-red-500' : 'border-blue-300'
+                          setIsPerfectInput(e.target.value);
+                          if (hasError.perfect) setHasError(prev => ({ ...prev, perfect: false }));
+                        }}
+                        className={`w-[120px] text-center ${
+                          hasError.perfect ? 'border-red-500 focus:border-red-500' : 'border-[#5750E3]'
                         }`}
                         placeholder="yes or no"
                       />
-                      <div className="flex gap-4">
-                        <Button 
-                          onClick={checkPerfect}
-                          className="bg-blue-400 hover:bg-blue-500"
-                        >
-                          Check
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            const divisors = findProperDivisors(numbers[currentIndex]);
-                            const sum = divisors.reduce((a, b) => a + b, 0);
-                            setIsPerfectInput(sum === numbers[currentIndex] ? 'yes' : 'no');
-                            setIsPerfectChecked(true);
-                          }}
-                          className="bg-gray-400 hover:bg-gray-500"
-                        >
-                          Skip
-                        </Button>
+                      <div className="glow-button simple-glow">
+                        <div className="flex gap-4">
+                          <Button 
+                            onClick={checkPerfect}
+                            className="bg-[#00783E] hover:bg-[#006633] text-white text-sm px-4 py-2 rounded"
+                          >
+                            Check
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              const divisors = findProperDivisors(numbers[currentIndex]);
+                              const sum = divisors.reduce((a, b) => a + b, 0);
+                              setIsPerfectInput(sum === numbers[currentIndex] ? 'yes' : 'no');
+                              setIsPerfectChecked(true);
+                            }}
+                            className="bg-gray-400 hover:bg-gray-500 text-white text-sm px-4 py-2 rounded"
+                          >
+                            Skip
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-green-600 font-bold">
-                      {(() => {
-                        const divisors = findProperDivisors(numbers[currentIndex]);
-                        const sum = divisors.reduce((a, b) => a + b, 0);
-                        return sum === numbers[currentIndex] ? 'Yes' : 'No';
-                      })()}
-                    </p>
+                    <div className="bg-[#008545]/10 border border-[#008545] p-4 rounded-lg w-[436px]">
+                      <p className="text-[#008545] font-bold">
+                        {(() => {
+                          const divisors = findProperDivisors(numbers[currentIndex]);
+                          const sum = divisors.reduce((a, b) => a + b, 0);
+                          return sum === numbers[currentIndex] ? 'Yes' : 'No';
+                        })()}
+                      </p>
+                    </div>
                   )}
                 </div>
               )}
 
               {isPerfectChecked && (
-                <div id="success-box" className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
-                  <h3 className="text-green-800 text-xl font-bold">Great Work!</h3>
-                  <p className="text-green-700">
+                <div id="success-box" className="bg-[#008545]/10 border border-[#008545] rounded-lg p-4 mt-4 w-[436px]">
+                  <h3 className="text-[#008545] text-xl font-bold">Great Work!</h3>
+                  <p className="text-[#008545]">
                     You've successfully analyzed {numbers[currentIndex]}!
                   </p>
-                  <Button
-                    onClick={currentIndex === numbers.length - 1 ? resetPractice : nextQuestion}
-                    className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white"
-                  >
-                    {currentIndex === numbers.length - 1 ? 'Start Over' : 'Next Number'}
-                  </Button>
+                  <div className="glow-button simple-glow mt-4">
+                    <Button
+                      onClick={currentIndex === numbers.length - 1 ? resetPractice : nextQuestion}
+                      className="w-full bg-[#008545] hover:bg-[#00703d] text-white text-sm px-4 py-2 rounded"
+                    >
+                      {currentIndex === numbers.length - 1 ? 'Start Over' : 'Next Number'}
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
-      <p className="text-center text-gray-600 mt-4">
-        Studying perfect numbers helps us understand number properties and patterns better.
-      </p>
-    </div>
+        </div>
+      </div>
+    </>
   );
 };
 
